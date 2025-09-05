@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import type { TodoItem, FilterType } from "@/types/todo";
-import { getTodosFromLocalStorage } from "@/utils/getTodosFromLocalStorage";
-import { setTodosToLocalStorage } from "@/utils/setTodosToLocalStorage";
+import {
+  getTodosFromLocalStorage,
+  setTodosToLocalStorage,
+} from "@/utils/localStorage";
 import TodoSelect from "./TodoSelect";
 import TodoList from "./TodoList";
 import EditTodoModal from "./EditTodoModal";

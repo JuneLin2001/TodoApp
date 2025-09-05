@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input, Button } from "antd";
 import type { TodoItem } from "@/types/todo";
-import { setTodosToLocalStorage } from "@/utils/setTodosToLocalStorage";
+import { setTodosToLocalStorage } from "@/utils/localStorage/setTodosToLocalStorage";
 
 interface AddTodoProps {
   todos: TodoItem[];
