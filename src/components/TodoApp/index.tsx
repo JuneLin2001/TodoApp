@@ -1,48 +1,35 @@
 import { useState, useEffect } from "react";
-import { Input, Button } from "antd";
 import type { TodoItem, FilterType } from "@/types/todo";
+import { getTodosFromLocalStorage } from "@/utils/getTodosFromLocalStorage";
 import { setTodosToLocalStorage } from "@/utils/setTodosToLocalStorage";
 import TodoSelect from "./TodoSelect";
 import TodoList from "./TodoList";
 import EditTodoModal from "./EditTodoModal";
+import AddTodo from "./AddTodo";
 
 const TodoApp: React.FC = () => {
   const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [newTodo, setNewTodo] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [editingTodo, setEditingTodo] = useState<TodoItem | null>(null);
   const [editTitle, setEditTitle] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("todos");
-    if (saved) {
-      setTodos(JSON.parse(saved));
-    }
+    const todosFromStorage = getTodosFromLocalStorage();
+    setTodos(todosFromStorage);
   }, []);
 
-  const addTodo = () => {
-    if (!newTodo.trim()) return;
-    const todo: TodoItem = {
-      id: Date.now(),
-      title: newTodo,
-      isCompleted: false,
-      createdAt: new Date(),
-    };
-    setTodos([todo, ...todos]);
-    setNewTodo("");
-    setTodosToLocalStorage(todo, todos);
-  };
-
-  const toggleTodo = (id: number) => {
-    setTodos(
-      todos.map((t) =>
-        t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
-      )
+  const handleToggleTodo = (id: number) => {
+    const updatedTodos = todos.map((t) =>
+      t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
     );
+    setTodos(updatedTodos);
+    setTodosToLocalStorage(updatedTodos);
   };
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter((t) => t.id !== id));
+  const handleDeleteTodo = (id: number) => {
+    const updatedTodos = todos.filter((t) => t.id !== id);
+    setTodos(updatedTodos);
+    setTodosToLocalStorage(updatedTodos);
   };
 
   const handleStartEditTodo = (todo: TodoItem) => {
@@ -50,7 +37,7 @@ const TodoApp: React.FC = () => {
     setEditTitle(todo.title);
   };
 
-  const saveEdit = () => {
+  const handleSaveEdit = () => {
     if (!editingTodo) return;
     setTodos(
       todos.map((t) =>
@@ -70,22 +57,12 @@ const TodoApp: React.FC = () => {
   return (
     <div className="todo-app p-6 max-w-lg mx-auto bg-white rounded-2xl shadow">
       <h1 className="text-2xl font-bold mb-4">Todo List</h1>
-      <div className="flex gap-2 mb-4">
-        <Input
-          placeholder="輸入新的待辦事項..."
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          onPressEnter={addTodo}
-        />
-        <Button type="primary" onClick={addTodo}>
-          新增
-        </Button>
-      </div>
+      <AddTodo todos={todos} setTodos={setTodos} />
       <TodoSelect filter={filter} setFilter={setFilter} />
       <TodoList
         filteredTodos={filteredTodos}
-        toggleTodo={toggleTodo}
-        deleteTodo={deleteTodo}
+        toggleTodo={handleToggleTodo}
+        deleteTodo={handleDeleteTodo}
         startEdit={handleStartEditTodo}
       />
       <EditTodoModal
@@ -93,7 +70,7 @@ const TodoApp: React.FC = () => {
         setEditingTodo={setEditingTodo}
         editTitle={editTitle}
         setEditTitle={setEditTitle}
-        saveEdit={saveEdit}
+        saveEdit={handleSaveEdit}
       />
     </div>
   );
