@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import type { TodoItem, FilterType } from "@/types/todo";
-import {
-  getTodosFromLocalStorage,
-  setTodosToLocalStorage,
-} from "@/utils/localStorage";
+import { getTodosFromLocalStorage } from "@/utils/localStorage/getTodosFromLocalStorage";
 import TodoSelect from "./TodoSelect";
 import TodoList from "./TodoList";
 import EditTodoModal from "./EditTodoModal";
@@ -19,20 +16,6 @@ const TodoApp: React.FC = () => {
     const todosFromStorage = getTodosFromLocalStorage();
     setTodos(todosFromStorage);
   }, []);
-
-  const handleToggleTodo = (id: number) => {
-    const updatedTodos = todos.map((t) =>
-      t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
-    );
-    setTodos(updatedTodos);
-    setTodosToLocalStorage(updatedTodos);
-  };
-
-  const handleDeleteTodo = (id: number) => {
-    const updatedTodos = todos.filter((t) => t.id !== id);
-    setTodos(updatedTodos);
-    setTodosToLocalStorage(updatedTodos);
-  };
 
   const handleStartEditTodo = (todo: TodoItem) => {
     setEditingTodo(todo);
@@ -62,9 +45,9 @@ const TodoApp: React.FC = () => {
       <AddTodo todos={todos} setTodos={setTodos} />
       <TodoSelect filter={filter} setFilter={setFilter} />
       <TodoList
+        todos={todos}
+        setTodos={setTodos}
         filteredTodos={filteredTodos}
-        toggleTodo={handleToggleTodo}
-        deleteTodo={handleDeleteTodo}
         startEdit={handleStartEditTodo}
       />
       <EditTodoModal
